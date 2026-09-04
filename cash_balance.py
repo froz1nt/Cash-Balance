@@ -5,7 +5,34 @@ import os
 import sys
 from datetime import datetime
 
-SAVE_FILE = "cash_balance_save.json"
+if sys.platform == "win32":
+    APP_DIR = os.path.join(
+        os.getenv("APPDATA") or os.path.expanduser("~"),
+        "CashBalance"
+    )
+
+elif sys.platform == "darwin":
+    APP_DIR = os.path.join(
+        os.path.expanduser("~"),
+        "Library",
+        "Application Support",
+        "CashBalance"
+    )
+
+else:
+    APP_DIR = os.path.join(
+        os.path.expanduser("~"),
+        ".local",
+        "share",
+        "CashBalance"
+    )
+
+os.makedirs(APP_DIR, exist_ok=True)
+
+SAVE_FILE = os.path.join(
+    APP_DIR,
+    "cash_balance_save.json"
+)
 
 # =========================================================
 # COLORS
@@ -1678,18 +1705,6 @@ class CashBalance:
             padx=30
         )
 
-        inputs.grid_columnconfigure(
-            0,
-            weight=1,
-            uniform="input"
-        )
-
-        inputs.grid_columnconfigure(
-            1,
-            weight=1,
-            uniform="input"
-        )
-
         # =================================================
         # PRICE
         # =================================================
@@ -1699,10 +1714,10 @@ class CashBalance:
             bg=CARD
         )
 
-        price_container.grid(
-            row=0,
-            column=0,
-            sticky="ew",
+        price_container.pack(
+            side="left",
+            fill="x",
+            expand=True,
             padx=(0, 8)
         )
 
@@ -1739,10 +1754,10 @@ class CashBalance:
             bg=CARD
         )
 
-        quantity_container.grid(
-            row=0,
-            column=1,
-            sticky="ew",
+        quantity_container.pack(
+            side="left",
+            fill="x",
+            expand=True,
             padx=(8, 0)
         )
 
@@ -1771,6 +1786,40 @@ class CashBalance:
         )
 
         # =================================================
+        # QUANTITY
+        # =================================================
+
+        quantity_container = tk.Frame(
+            inputs,
+            bg=CARD
+        )
+
+        tk.Label(
+            quantity_container,
+            text="Количество",
+            font=(
+                "Segoe UI",
+                9,
+                "bold"
+            ),
+            fg=TEXT,
+            bg=CARD
+        ).pack(
+            anchor="w",
+            pady=(0, 7)
+        )
+
+        quantity_entry = self.create_input(
+            quantity_container
+        )
+
+        quantity_entry.pack(
+            fill="x",
+            expand=True,
+            ipady=11
+        )
+
+        # =================================================
         # COMMENT
         # =================================================
 
@@ -1790,12 +1839,18 @@ class CashBalance:
             pady=(20, 7)
         )
 
+        validate_comment = self.root.register(
+            lambda text: len(text) <= 35
+        )
+
         comment_entry = tk.Entry(
             card,
             font=(
                 "Segoe UI",
                 10
             ),
+            validate="key",
+            validatecommand=(validate_comment, "%P"),
             fg=TEXT,
             bg=CARD_2,
             insertbackground=WHITE,
@@ -2359,12 +2414,30 @@ class CashBalance:
     # SHAKE
     # =====================================================
 
-    def shake_widget(
-        self,
-        widget
-    ):
+        def shake_widget(
+                self,
+                widget
+        ):
+            try:
+                widget.configure(
+                    highlightbackground=RED,
+                    highlightcolor=RED
+                )
 
-        original_x = widget.winfo_x()
+                self.root.after(
+                    500,
+                    lambda:
+                    widget.configure(
+                        highlightbackground=BORDER,
+                        highlightcolor=BLUE
+                    )
+                )
+
+            except tk.TclError:
+                pass
+
+        def show_input_error(self, widget, message):
+            original_x = widget.winfo_x()
 
         positions = [
             0,
@@ -2377,26 +2450,19 @@ class CashBalance:
             0
         ]
 
-        def animate(index):
-
+        def animate(index, widget, original_x):  # ✅ добавляем параметры
             if index >= len(positions):
-
                 try:
-
                     widget.place_configure(
                         x=original_x
                     )
-
                 except tk.TclError:
                     pass
-
                 return
 
             try:
-
                 widget.place_configure(
-                    x=original_x
-                    + positions[index]
+                    x=original_x + positions[index]
                 )
 
             except tk.TclError:
