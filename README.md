@@ -31,7 +31,7 @@ Cash Balance is useful for **Majestic RP** players who:
 * are saving up for a specific amount;
 * want to quickly recalculate their capital.
 
-#❗IMPORTANT❗
+# ❗IMPORTANT❗
 
 Cash Balance is an auxiliary tool for personal tracking of in-game funds.
 The application is not affiliated with the Majestic RP banking system, does not alter in-game balances, and does not provide any in-game advantages.
@@ -74,7 +74,7 @@ Cash Balance будет полезен игрокам **Majestic RP**, кото�
 * хотят быстро пересчитывать свой капитал.
 
 
-#❗ВАЖНО❗
+# ❗ВАЖНО❗
 
 Cash Balance является вспомогательным инструментом для личного учёта игровых денежных средств.
 Приложение не связано с банковской системой Majestic RP, не изменяет игровой баланс и не предоставляет преимуществ в игре.
